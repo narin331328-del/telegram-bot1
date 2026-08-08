@@ -1,186 +1,88 @@
 import os
-import platform
-import psutil
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import (
-    ApplicationBuilder,
-    CallbackQueryHandler,
-    CommandHandler,
-    ContextTypes,
-    MessageHandler,
-    filters,
-)
-
-TOKEN = "8812870706:AAF_VEcy-lvnhUI6FqGeujllddRSaGqaKts"
-
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [
-            InlineKeyboardButton("📊 ស្ថានភាពប្រព័ន្ធ", callback_data="status"),
-            InlineKeyboardButton("🛡️ ការពិនិត្យសុវត្ថិភាព", callback_data="scan"),
-        ],
-        [InlineKeyboardButton("ℹ️ ជំនួយ និងការណែនាំ", callback_data="help")],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    welcome_text = (
-        "🔥 *ជម្រាបសួរលោក Narin!* 🙏\n\n"
-        "ប្រព័ន្ធសុវត្ថិភាព Bot របស់អ្នកត្រូវបានដំណើរការដោយជោគជ័យ និងត្រៀមខ្លួនរួចជាស្រេចហើយ។ "
-        "សូមជ្រើសរើសជម្រើសខាងក្រោមនេះ ឬវាយបញ្ចូលបញ្ជា៖"
-    )
-    if update.message:
-        await update.message.reply_text(
-            welcome_text, parse_mode="Markdown", reply_markup=reply_markup
-        )
-    elif update.callback_query:
-        await update.callback_query.message.edit_text(
-            welcome_text, parse_mode="Markdown", reply_markup=reply_markup
-        )
-
-
-async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    cpu = psutil.cpu_percent(interval=1)
-    memory = psutil.virtual_memory().percent
-    disk = psutil.disk_usage("/").percent
-    os_info = platform.system() + " " + platform.release()
-
-    report = (
-        "🟢 *របាយការណ៍ស្ថានភាពប្រព័ន្ធកុំព្យូទ័រ*\n\n"
-        f"💻 *ប្រព័ន្ធប្រតិបត្តិការ:* `{os_info}`\n"
-        f"⚡ *ការប្រើប្រាស់ CPU:* `{cpu}%`\n"
-        f"🧠 *ការប្រើប្រាស់ RAM:* `{memory}%`\n"
-        f"💾 *ការប្រើប្រាស់ Disk:* `{disk}%`\n"
-        "🔒 *ស្ថានភាព:* សុវត្ថិភាព និងលំនឹងល្អ"
-    )
-
-    if update.message:
-        await update.message.reply_text(report, parse_mode="Markdown")
-    elif update.callback_query:
-        await update.callback_query.message.edit_text(
-            report,
-            parse_mode="Markdown",
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("« ត្រឡប់ក្រោយ", callback_data="back")]]
-            ),
-        )
-
-
-async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    scan_msg = (
-        "🛡️ *ការពិនិត្យបណ្តាញ និងរន្ធតភ្ជាប់ (Network Scan)*\n\n"
-        "កំពុងစစ်និត្យប្រព័ន្ធបណ្តាញក្នុងម៉ាស៊ីន...\n"
-        "✅ *Port 22 (SSH):* មានសុវត្ថិភាព\n"
-        "✅ *Port 80 (HTTP):* កំពុងដំណើរការ\n"
-        "✅ *Port 443 (HTTPS):* កំពុងដំណើរការ\n\n"
-        "✨ *លទ្ធផល:* មិនមានការទម្លុះទម្លាយ ឬ intrusions ណាមួយកើតឡើងទេ។"
-    )
-    if update.message:
-        await update.message.reply_text(scan_msg, parse_mode="Markdown")
-    elif update.callback_query:
-        await update.callback_query.message.edit_text(
-            scan_msg,
-            parse_mode="Markdown",
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("« ត្រឡប់ក្រោយ", callback_data="back")]]
-            ),
-        )
-
-
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    help_text = (
-        "📖 *មុខងារនៃការប្រើប្រាស់ Bot*\n\n"
-        "/start - បង្ហាញផ្ទាំងបញ្ជាដើម\n​"
-        "/status - ពិនិត្យមើលកម្លាំងម៉ាស៊ីន (CPU/RAM)\n"
-        "/scan - និត្យមើលសុវត្ថិភាព Port ក្នុងបណ្តាញ\n"
-        "/help - បង្ហាញបញ្ជីជំនួយ"
-    )
-    if update.message:
-        await update.message.reply_text(help_text, parse_mode="Markdown")
-    elif update.callback_query:
-        await update.callback_query.message.edit_text(
-            help_text,
-            parse_mode="Markdown",
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("« ត្រឡប់ក្រោយ", callback_data="back")]]
-            ),
-        )
-
-
-async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    if query.data == "status":
-        await status_command(update, context)
-    elif query.data == "scan":
-        await scan_command(update, context)
-    elif query.data == "help":
-        await help_command(update, context)
-    elif query.data == "back":
-        await start(update, context)
-
-
-async def echo_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_text = update.message.text
-    response = (
-        f"🤖 *សាររបស់អ្នក៖* `{user_text}`\n"
-        "សូមវាយពាក្យ /start ដើម្បីបើកផ្ទាំងបញ្ជា ឬ /help ដើម្បីសាកសួរព័ត៌មានបន្ថែម។"
-    )
-    await update.message.reply_text(response, parse_mode="Markdown")
-
-
-if __name__ == "__main__":
-    app = ApplicationBuilder().token(TOKEN).build()
-
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("status", status_command))
-    app.add_handler(CommandHandler("scan", scan_command))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CallbackQueryHandler(button_handler))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo_all))
-
-    print("🚀 Bot សុវត្ថិភាពជាភាសាខ្មែរ កំពុងដំណើរការយ៉ាងរលូនហើយ...")
-    app.run_polling()
-import os
 import telebot
-import requests
 import google.generativeai as genai
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-# ដាក់ Token របស់ Telegram Bot និង Gemini API Key របស់អ្នកនៅទីនេះ
-TELEGRAM_BOT_TOKEN = "8812870706:AAF_VEcy-lvnhUI6FqGeujllddRSaGqaKts"
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
+TELEGRAM_BOT_TOKEN = os.environ.get("8812870706:AAF_VEcy-lvnhUI6FqGeujllddRSaGqaKts")
+GEMINI_API_KEY = os.environ.get("AQ.Ab8RN6JwQmSSHSrsbOLDy3Fp7wMcjDmwIlxUhUkCcos0DhIVmA")
 
-bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
+bot = telebot.TeleBot(8812870706:AAF_VEcy-lvnhUI6FqGeujllddRSaGqaKts)
 
-# កំណត់ប្រព័ន្ធ Google Gemini AI សម្រាប់ជំនួយការ Cybersecurity
 genai.configure(api_key=AQ.Ab8RN6JwQmSSHSrsbOLDy3Fp7wMcjDmwIlxUhUkCcos0DhIVmA)
-ai_model = genai.GenerativeModel("gemini-pro")
+ai_model = genai.GenerativeModel("gemini-1.5-flash")
 
-# មុខងារពេលអ្នកប្រើប្រាស់ផ្ញើសារ ឬ Link មក
+# បង្កើត Menu ជាមួយប៊ូតុង 6 មុខងារសំខាន់ៗ (Best for all devices)
+def main_menu():
+    markup = InlineKeyboardMarkup(row_width=2)
+    btn1 = InlineKeyboardButton("🛡️ ពិនិត្យសុវត្ថិភាព Link", callback_data="check_link")
+    btn2 = InlineKeyboardButton("🔐 ឆែក Password ខ្លាំង/ខ្សោយ", callback_data="check_pass")
+    btn3 = InlineKeyboardButton("🌐 ពិនិត្យ IP / Domain", callback_data="ip_lookup")
+    btn4 = InlineKeyboardButton("🤖 AI Cybersecurity Expert", callback_data="ai_chat")
+    btn5 = InlineKeyboardButton("💡 טיפסការពារខ្លួន (Tips)", callback_data="security_tips")
+    btn6 = InlineKeyboardButton("ℹ️ ជំនួយ និងការណែនាំ", callback_data="help_menu")
+    markup.add(btn1, btn2, btn3, btn4, btn5, btn6)
+    return markup
+
+# ពេលវាយ /start ឬ /help
+@bot.message_handler(commands=['start', 'help'])
+def send_welcome(message):
+    user_name = message.from_user.first_name
+    welcome_text = (
+        f"🔥 ជម្រាបសួរលោក **{user_name}**! 🙏\n\n"
+        "ប្រព័ន្ធសុវត្ថិភាព Bot របស់អ្នកត្រូវបានដំណើរការដោយជោគជ័យ និងត្រៀមខ្លួនរួចជាស្រេចហើយ។\n"
+        "សូមជ្រើសរើសជម្រើសខាងក្រោមនេះ ឬផ្ញើសារសួរមកកាន់ខ្ញុំផ្ទាល់៖"
+    )
+    bot.send_message(message.chat.id, welcome_text, reply_markup=main_menu(), parse_mode="Markdown")
+
+# จัดการការចុចប៊ូតុង (Inline Button Actions)
+@bot.callback_query_handler(func=lambda call: True)
+def callback_query(call):
+    chat_id = call.message.chat.id
+    
+    if call.data == "check_link":
+        bot.send_message(chat_id, "🔗 សូមផ្ញើ Link (URL) ដែលអ្នកចង់ឆែកសុវត្ថិភាពមកកាន់ទីនេះ ខ្ញុំនឹងវិភាគជូន!")
+    elif call.data == "check_pass":
+        bot.send_message(chat_id, "🔐 សូមផ្ញើ Password ដែលអ្នកចង់ពិនិត្យកម្រិតសុវត្ថិភាពមក (ឧទាហរណ៍៖ Test@123)")
+    elif call.data == "ip_lookup":
+        bot.send_message(chat_id, "🌐 សូមផ្ញើលេខ IP Address ឬ Domain Website មកដើម្បីពិនិត្យព័ត៌មានមូលដ្ឋាន។")
+    elif call.data == "ai_chat":
+        bot.send_message(chat_id, "🤖 លោកអ្នកអាចសាកសួររាល់សំណួរទាក់ទងនឹង Cybersecurity និង Ethical Hacking មកកាន់ខ្ញុំបានដោយសេរី!")
+    elif call.data == "security_tips":
+        tips = (
+            "💡 **គន្លឹះការពារខ្លួនពី Hacker:**\n"
+            "1. កុំចុចលើ Link ប្លែកៗដែលមិនស្គាល់ប្រភព។\n"
+            "2. បើកប្រព័ន្ធ 2FA (Two-Factor Authentication) គ្រប់គណនីទាំងអស់។\n"
+            "3. ប្រើប្រាស់ Password ខុសៗគ្នាសម្រាប់គណនីនីមួយៗ។\n"
+            "4. ធ្វើបច្ចុប្បន្នភាព Software ជានិច្ច។"
+        )
+        bot.send_message(chat_id, tips, parse_mode="Markdown")
+    elif call.data == "help_menu":
+        bot.send_message(chat_id, "ℹ️ Bot นี้ត្រូវបានបង្កើតឡើងដើម្បីជួយការពារសុវត្ថិភាពប្រព័ន្ធ និងផ្ដល់ចំណេះដឹងផ្នែក Ethical Hacking។ ចុច /start ដើម្បីត្រឡប់ទៅ Menu ដើម។")
+
+# គ្រប់គ្រងរាល់សារដែលអ្នកប្រើប្រាស់វាយចូលមក (Text Messages & AI Analysis)
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     user_text = message.text
+    chat_id = message.chat.id
     
-    # បើមានគេផ្ញើ Link មក (ឆែករកមើល http ឬ https)
+    # បើមានគេផ្ញើ Link មក
     if "http://" in user_text or "https://" in user_text:
-        bot.reply_to(message, "🔍 កំពុងធ្វើការវិភាគសុវត្ថិភាពផ្អែកលើ Link នេះ...")
-        
-        # ឧទាហរណ៍៖ ការប្រើប្រាស់ VirusTotal API ឬ Logic ឆែកសុវត្ថិភាពសាមញ្ញ
-        # ទីនេះយើងអាចប្រើ AI ជួយវិភាគហានិភ័យនៃ Link នោះបណ្តោះអាសន្ន
-        prompt = f"Analyze this link/URL for potential phishing, malware, or security risks and give a safety verdict (Safe or Dangerous with reasons): {user_text}"
-        response = ai_model.generate_content(prompt)
-        
-        bot.reply_to(message, f"🛡️ **លទ្ធផលវិភាគសុវត្ថិភាព Link:**\n\n{response.text}")
-    
-    else:
-        # បើជាសំនួរធម្មតា ឬសំណួរទាក់ទងនឹង Ethical Hacking / Cybersecurity
+        bot.send_message(chat_id, "🔍 កំពុងធ្វើការវិភាគសុវត្ថិភាពផ្អែកលើ Link នេះតាមរយៈ AI...")
         try:
-            prompt = f"You are an expert Cybersecurity and Ethical Hacking Assistant. Answer this question clearly and securely: {user_text}"
+            prompt = f"Analyze this link/URL for potential phishing, malware, or security risks and give a safety verdict (Safe or Dangerous with reasons): {user_text}"
             response = ai_model.generate_content(prompt)
-            bot.reply_to(message, response.text)
+            bot.send_message(chat_id, f"🛡️ **លទ្ធផលវិភាគសុវត្ថិភាព Link:**\n\n{response.text}", parse_mode="Markdown")
         except Exception as e:
-            bot.reply_to(message, "⚠️ មានបញ្ហាក្នុងការភ្ជាប់ជាមួយ AI System!")
+            bot.send_message(chat_id, "⚠️ មានបញ្ហាក្នុងការភ្ជាប់ជាមួយប្រព័ន្ធវិភាគសុវត្ថិភាព!")
+    else:
+        # សំណួរធម្មតា ឬសំណួរទាក់ទងនឹង Cybersecurity ឆ្លើយតបដោយ AI
+        bot.send_chat_action(chat_id, 'typing')
+        try:
+            prompt = f"You are an expert Cybersecurity and Ethical Hacking Assistant. Answer this question clearly, professionally, and securely: {user_text}"
+            response = ai_model.generate_content(prompt)
+            bot.send_message(chat_id, response.text)
+        except Exception as e:
+            bot.send_message(chat_id, "⚠️ មានបញ្ហាក្នុងការភ្ជាប់ជាមួយ AI System!")
 
-# រត់ Bot
 print("Bot is running...")
 bot.infinity_polling()
