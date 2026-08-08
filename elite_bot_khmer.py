@@ -3,12 +3,12 @@ import telebot
 import google.generativeai as genai
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-TELEGRAM_BOT_TOKEN = os.environ.get("8812870706:AAF_VEcy-lvnhUI6FqGeujllddRSaGqaKts")
-GEMINI_API_KEY = os.environ.get("AQ.Ab8RN6JwQmSSHSrsbOLDy3Fp7wMcjDmwIlxUhUkCcos0DhIVmA")
+TELEGRAM_BOT_TOKEN = os.environ.get("88128706:AAF_VEcy-lvnhUI6FqGeuj1ldDRSaGgqKts")
+GEMINI_API_KEY = os.environ.get("AQ.Ab8RN6JN-EEX1iyIyWjQtLbATGHBhDSQ0BWs5F39mOASDghSjA")
 
-bot = telebot.TeleBot(8812870706:AAF_VEcy-lvnhUI6FqGeujllddRSaGqaKts)
+bot = telebot.TeleBot(88128706:AAF_VEcy-lvnhUI6FqGeuj1ldDRSaGgqKts)
 
-genai.configure(api_key=AQ.Ab8RN6JwQmSSHSrsbOLDy3Fp7wMcjDmwIlxUhUkCcos0DhIVmA)
+genai.configure(api_key=AQ.Ab8RN6JN-EEX1iyIyWjQtLbATGHBhDSQ0BWs5F39mOASDghSjA)
 ai_model = genai.GenerativeModel("gemini-1.5-flash")
 
 # បង្កើត Menu ជាមួយប៊ូតុង 6 មុខងារសំខាន់ៗ (Best for all devices)
