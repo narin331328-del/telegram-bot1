@@ -4,7 +4,7 @@ from google import generativeai as genai
 
 # ដាក់ Token និង API Key របស់អ្នកស្រេចក្នុងនេះផ្ទាល់តែម្ដង
 TELEGRAM_BOT_TOKEN = "8812870706:AAF_VEcy-lvnhUI6FqGeujllddRSaGqaKts"
-GEMINI_API_KEY = "AQ.Ab8RN6JN-EEX1iyIyWjQtLbATGHBhDSQ0BWs5F39mOASDghSjA"
+GEMINI_API_KEY = "AQ.Ab8RN6KtuUwA5VDukS_Q0jTnggoZkvWFFE82ste2QB7DxgxDEw"
 
 # Config Gemini API
 genai.configure(api_key=GEMINI_API_KEY)
