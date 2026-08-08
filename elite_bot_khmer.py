@@ -1,20 +1,11 @@
-import os
 import telebot
 from telebot import types
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google import generativeai as genai
-
-# យក Key ប្រភេទ AQ... របស់អ្នកមកដាក់ទីនេះ
-ACCESS_TOKEN = "AQ.Ab8RN6Jy-LdyGdnf_pPRYIfAMtM859ca0Cz..." 
+from groq import Groq
 
 TELEGRAM_BOT_TOKEN = "8812870706:AAF_VEcy-lvnhUI6FqGeujllddRSaGqaKts"
+GROQ_API_KEY = "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"
 
-# កំណត់សិទ្ធិប្រើប្រាស់ OAuth Token ជាមួយ Gemini
-credentials = Credentials(token=ACCESS_TOKEN)
-genai.configure(credentials=credentials)
-
-model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+client = Groq(api_key=GROQ_API_KEY)
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 
 @bot.message_handler(commands=['start'])
@@ -32,13 +23,17 @@ def handle_message(message):
         if text == "💡 ជំនួយ (Help)":
             bot.reply_to(message, "អ្នកអាចសាកសួររាល់សំណួរ ឬបញ្ជាផ្សេងៗទៅកាន់ខ្ញុំបានដោយសេរី!")
         elif text == "🤖 អំពីខ្ញុំ (About)":
-            bot.reply_to(message, "ខ្ញុំជា Telegram Bot ដែលขับเคลื่อนដោយ Google Gemini AI!")
+            bot.reply_to(message, "ខ្ញុំជា Telegram Bot ដែលขับเคลื่อนដោយ Groq AI!")
         else:
-            response = model.generate_content(text)
-            bot.reply_to(message, response.text)
+            # ហៅប្រើ AI ពី Groq
+            chat_completion = client.chat.completions.create(
+                messages=[{"role": "user", "content": text}],
+                model="llama3-8b-8192",
+            )
+            bot.reply_to(message, chat_completion.choices[0].message.content)
     except Exception as e:
         bot.reply_to(message, f"មានបញ្ហាបន្តិច៖ {str(e)}")
 
 if __name__ == "__main__":
-    print("Bot is running successfully with OAuth token...")
+    print("Bot is running successfully with Groq AI...")
     bot.infinity_polling()
