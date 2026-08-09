@@ -17,7 +17,7 @@ bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 def send_welcome(message):
   bot.reply_to(
       message,
-      "សួស្តី! Bot ដំណើរការជោគជ័យហើយជាមួយ Cohere AI! អ្នកអាចសួរសំណួរមកខ្ញុំបាន!",
+      "សួស្តី! Bot ដំណើរការជោគជ័យហើយជាមួយ Cohere AI (Command A)! អ្នកអាចសួរសំណួរមកខ្ញុំបាន!",
   )
 
 
@@ -33,7 +33,7 @@ def send_help(message):
 def handle_message(message):
   try:
     response = co.chat(
-        model="command-light",  # 👈 ដូរមកប្រើ model នេះវិញម្តង
+        model="command-a",  # 👈 ប្រើប្រាស់ Model ស៊េរីថ្មីបំផុត និងមិន bị bิท
         messages=[{"role": "user", "content": message.text}],
     )
     reply_text = response.message.content[0].text
