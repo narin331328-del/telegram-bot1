@@ -11,7 +11,7 @@ load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 
-# កំណត់ Timeout ២០វិនាទី ដើម្បីការពារ Error The read operation timed out ពេលផ្ញើ Link ពិនិត្យ
+# កំណត់ Timeout ២០វិនាទី ដើម្បីការពារ Error ពេលផ្ញើ Link ពិនិត្យ
 try:
   co = cohere.ClientV2(api_key=COHERE_API_KEY, timeout=20.0)
 except Exception as e:
@@ -88,7 +88,7 @@ def send_help(message):
       message.chat.id,
       "📌 របៀបប្រើប្រាស់ Bot នេះ៖\n"
       "1. Chat Anything: សួរនាំរាល់បញ្ហា IT, Hacking, ឬចំណេះដឹងទូទៅគ្រប់សំណួរ។\n"
-      "2. Security Check: ផ្ញើ Link ឬ Text មកដើម្បីឱ្យ AI វិភាគសុវត្ថិភាព។\n"
+      "2. Security Check: ផ្ញើ Link ឬ Text មកឱ្យ AI វិភាគសុវត្ថិភាព។\n"
       "3. Image Analysis: ផ្ញើរូបភាព ឬ Screenshot ឱ្យ AI ຊ່ວຍអាននិងពន្យល់។",
       reply_markup=get_main_menu(),
   )
@@ -179,7 +179,7 @@ def handle_text_messages(message):
     elif user_input == "🌐 Scan Link / File Security":
       reply_text = (
           "🌐 Security Scanner (Links & Files):\n"
-          "សូមផ្ញើ URL Link (ឧទាហរណ៍ Link ຕ່າງៗ) ឬ Code snippet មកកាន់ទីនេះ "
+          "សូមផ្ញើ URL Link ឬ Code snippet មកកាន់ទីនេះ "
           "នោះ AI នឹងធ្វើការវិភាគយ៉ាងស៊ីជម្រៅថាតើវាមានសុវត្ថិភាព (SAFE) ឬមានគ្រោះថ្នាក់ (DANGEROUS)។"
       )
     elif user_input == "💻 Programming & Code Debug":
@@ -196,12 +196,9 @@ def handle_text_messages(message):
     elif user_input == "❓ ជំនួយការប្រើប្រាស់ (Help)":
       reply_text = (
           "📌 របៀបប្រើប្រាស់ Bot នេះ៖\n"
-          "1. Chat Anything: សួរនាំរាល់បញ្ហា IT, Hacking, ឬចំណេះដឹងទូទៅគ្រប់សំណួរ។\n"
-          "2. Security Check: ផ្ញើ Link ឬ Text មកដើម្បីឱ្យ AI វិភាគសុវត្ថិភាព។\n"
-          "3. Image Analysis: ផ្ញើរូបភាព ឬ Screenshot ឱ្យ AI ຊ່ວຍអាននិងពន្យល់។"
+          "1. Chat Anything\n2. Security Check\n3. Image Analysis"
       )
     else:
-      # ផ្ញើសារ Loading ជាមុនសិន ដើម្បីការពារកុំឱ្យ Telegram ផ្អាក Timeout ពេល AI គិតយូរ (ពេល Scan Link)
       loading_msg = bot.send_message(
           message.chat.id, "⏳ AI កំពុងវិភាគសំណួរ និងពិនិត្យ Link យ៉ាងម៉ត់ចត់..."
       )
@@ -236,8 +233,8 @@ def handle_text_messages(message):
           for item in reply_content:
             if hasattr(item, "text"):
               reply_text += item.text
-        else:
-          reply_text = str(reply_content)
+      else:
+        reply_text = str(reply_content)
 
     send_long_message(
         message.chat.id,
@@ -258,5 +255,11 @@ bot.register_message_handler(handle_text_messages, content_types=["text"])
 
 if __name__ == "__main__":
   set_bot_commands(bot)
-  print("Bot is running smoothly and ready for GitHub deployment...")
+  # លុប Webhook ចោលមុននឹងចាប់ផ្តើម Polling ដើម្បីការពារ Error get_updates ជាន់គ្នា
+  try:
+    bot.remove_webhook()
+  except Exception as e:
+    print(f"Remove Webhook Error: {e}")
+
+  print("Bot is running smoothly and ready...")
   bot.infinity_polling(skip_pending=True)
