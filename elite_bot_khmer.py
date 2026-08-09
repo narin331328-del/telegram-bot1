@@ -17,7 +17,7 @@ bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 def send_welcome(message):
   bot.reply_to(
       message,
-      "សួស្តី! Bot ដំណើរការជោគជ័យហើយ! អ្នកអាចសួរសំណួរ ឬជជែកជាមួយខ្ញុំបាន"
+      "សួស្តី! Bot ដំណើរការជោគជ័យហើយ! អ្នកអាចសួរសំណួរ ឬជជែកជាភាសាខ្មែរជាមួយខ្ញុំបាន"
       " គ្រប់សំណួរទាំងអស់។",
   )
 
@@ -30,7 +30,6 @@ def send_help(message):
   )
 
 
-# មុខងារផ្សេងៗដែលមិនទាន់បើកឱ្យប្រើប្រាស់ (Coming Soon)
 @bot.message_handler(commands=["menu", "settings", "profile", "scan"])
 def coming_soon(message):
   bot.reply_to(
@@ -42,12 +41,38 @@ def coming_soon(message):
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
   try:
+    # បន្ថែម System Prompt ដើម្បីបង្គាប់ឱ្យ AI ឆ្លើយជាភាសាខ្មែរជានិច្ច
     response = co.chat(
-        model="command-a-plus-05-2026",  # 👈 ប្រើប្រាស់ Model ID ផ្លូវការថ្មីបំផុតរបស់ Cohere v2
-        messages=[{"role": "user", "content": message.text}],
+        model="command-a-plus-05-2026",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a helpful assistant. Always reply in clear and"
+                    " natural Khmer language."
+                ),
+            },
+            {"role": "user", "content": message.text},
+        ],
     )
-    reply_text = response.message.content[0].text
-    bot.reply_to(message, reply_text)
+
+    # កែតម្រូវការទាញយក text ពី response ម៉ូឌែលថ្មី ដើម្បីកុំឱ្យលោត Error object has no attribute text
+    reply_content = response.message.content
+    if isinstance(reply_content, list):
+      reply_text = "".join(
+          [
+              item.text
+              if hasattr(item, "text")
+              else getattr(item, "get", lambda x: "")("text", str(item))
+              for item in reply_content
+          ]
+      )
+    else:
+      reply_text = str(reply_content)
+
+    bot.reply_to(
+        message, reply_text if reply_text else "សូមអភ័យទោស ខ្ញុំមិនបានទទួលអត្ថបទទេ។"
+    )
   except Exception as e:
     bot.reply_to(message, f"មានបញ្ហាបន្តិច៖ {str(e)}")
 
