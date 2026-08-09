@@ -117,9 +117,8 @@ def handle_photo(message):
 
 
 # ==========================================
-# #HANDLER_TEXT_MESSAGES: គ្រប់គ្រងសារអត្ថបទទាំងអស់ (គ្មាន Lambda Error ទៀតទេ)
+# #HANDLER_TEXT_MESSAGES: គ្រប់គ្រងសារអត្ថបទទាំងអស់ (Safe Function)
 # ==========================================
-@bot.message_handler(content_types=["text"])
 def handle_text_messages(message):
   try:
     user_input = message.text if message.text else ""
@@ -163,7 +162,6 @@ def handle_text_messages(message):
           "3. **Image Analysis:** ផ្ញើរូបភាព ឬ Screenshot ឱ្យ AI ຊ່ວຍអាននិងពន្យល់។"
       )
     else:
-      # #NOTE: ប្រព័ន្ធឆ្លើយតប AI ឆ្លាតវៃសម្រាប់រាល់សំណួរ និង Links (ChatGPT & Gemini style)
       system_prompt = (
           "You are an elite, world-class AI Assistant (like ChatGPT and Gemini)"
           " designed to answer anything accurately and chat about everything. "
@@ -213,6 +211,13 @@ def handle_text_messages(message):
     )
 
 
+bot.register_message_handler(
+    handle_text_messages,
+    content_types=["text"],
+)
+
+
 if __name__ == "__main__":
   set_bot_commands(bot)
-  bot.infinity_polling()
+  # បញ្ជាក់៖ ត្រូវធានាថាបានបិទ Bot ចាស់ដែលកំពុងרץចោលក្នុង Background មុនពេល Start សាថ្មី
+  bot.infinity_polling(skip_pending=True)
