@@ -37,7 +37,7 @@ def get_main_menu():
   btn2 = types.KeyboardButton("🧠 ចំណេះដឹងទូទៅ (General Knowledge)")
   btn3 = types.KeyboardButton("🌐 Scan Link / File Security")
   btn4 = types.KeyboardButton("💻 Programming & Code Debug")
-  btn5 = types.KeyboardButton("📚 ການសិក្សា និងការអភិវឌ្ឍខ្លួន")
+  btn5 = types.KeyboardButton("📚 ការសិក្សា និងការអភិវឌ្ឍខ្លួន")
   btn6 = types.KeyboardButton("❓ ជំនួយការប្រើប្រាស់ (Help)")
   markup.add(btn1, btn2, btn3, btn4, btn5, btn6)
   return markup
@@ -60,7 +60,7 @@ def send_welcome(message):
 
 
 # ==========================================
-# #HANDLER_HELP: ជំនួយការប្រើប្រាស់
+# #HANDLER_HELP: ជំនួយការប្រើប្រាស់ (/help)
 # ==========================================
 @bot.message_handler(commands=["help"])
 def send_help(message):
@@ -72,62 +72,6 @@ def send_help(message):
       "3. **Image Analysis:** ផ្ញើរូបភាព ឬ Screenshot ឱ្យ AI ຊ່ວຍអាននិងពន្យល់។",
       reply_markup=get_main_menu(),
   )
-
-
-# ==========================================
-# #HANDLER_BUTTONS: ការចុចលើប៊ូតុងម៉ឺនុយនីមួយៗ
-# ==========================================
-@bot.message_handler(
-    func=lambda msg: msg.text
-    and msg.text.strip()
-    in [
-        "🛡️ Cybersecurity & IT Pro",
-        "🧠 ចំណេះដឹងទូទៅ (General Knowledge)",
-        "🌐 Scan Link / File Security",
-        "💻 Programming & Code Debug",
-        "📚 ການសិក្សា និងការអភិវឌ្ឍខ្លួន",
-        "❓ ជំនួយការប្រើប្រាស់ (Help)",
-    ]
-)
-def handle_menu_clicks(message):
-  text = message.text.strip()
-
-  if "Cybersecurity" in text:
-    reply = (
-        "🛡️ **Cybersecurity & Ethical Hacking Hub:**\n"
-        "ទីនេះសម្រាប់ពិភាក្សា និងជំនួយការផ្នែក Pentesting, Network Security, "
-        "Vulnerability Assessment, និង Device Security (Phone, PC, Laptop, Hardware)។ "
-        "តើអ្នកចង់ឱ្យខ្ញុំជួយវិភាគអ្វីថ្ងៃនេះ?"
-    )
-  elif "ចំណេះដឹងទូទៅ" in text:
-    reply = (
-        "🧠 **General Knowledge & Daily Assistant:**\n"
-        "ទីនេះសម្រាប់សួរសំណួរទូទៅ វិទ្យាសាស្ត្រ ប្រវត្តិសាស្ត្រ សុខភាព គន្លឹះជីវិត "
-        "និងការសិក្សាប្រចាំថ្ងៃ។ តើអ្នកចង់ស្វែងយល់ពីអ្វី?"
-    )
-  elif "Scan Link" in text:
-    reply = (
-        "🌐 **Security Scanner (Links & Files):**\n"
-        "សូមផ្ញើ **URL Link**, **ឈ្មោះ File**, ឬ **Code snippet** មកកាន់ទីនេះ "
-        "នោះខ្ញុំនឹងធ្វើការវិភាគយ៉ាងក្បោះក្បាយ ថាតើវាមានសុវត្ថិភាព (Safe) ឬមានគ្រោះថ្នាក់។"
-    )
-  elif "Programming" in text:
-    reply = (
-        "💻 **Programming & Scripting Assistant:**\n"
-        "ផ្ញើកូដ ឬបញ្ហា Programming របស់អ្នកមក (Python, C++, JavaScript, Bash, v.v.) "
-        "ខ្ញុំនឹងជួយរកកំហុស (Debug) និងពន្យល់ពីរបៀបកែសម្រួលយ៉ាងលម្អិត។"
-    )
-  elif "ការសិក្សា" in text:
-    reply = (
-        "📚 **Study & Self-Development:**\n"
-        "ជួយសម្រួលដល់ការសិក្សា ការធ្វើលំហាត់ សរសេរបាយការណ៍ ឬបង្កើតគម្រោងផែនការផ្សេងៗ។"
-    )
-  else:
-    reply = (
-        "📌 អាចសួរនាំរាល់ចម្ងល់ ឬផ្ញើ Link/File/รูปภาพ មកកាន់ទីនេះបានគ្រប់ពេល!"
-    )
-
-  bot.send_message(message.chat.id, reply, reply_markup=get_main_menu())
 
 
 # ==========================================
@@ -173,47 +117,86 @@ def handle_photo(message):
 
 
 # ==========================================
-# #HANDLER_CHAT_ANYTHING: ឆ្លើយតបគ្រប់សំណួរ (ChatGPT & Gemini style)
+# #HANDLER_ALL_MESSAGES: គ្រប់គ្រងសារទាំងអស់ (ឆ្លើយតប ChatGPT / Gemini style & Menu Clicks)
 # ==========================================
 @bot.message_handler(func=lambda message: True)
 def handle_all_messages(message):
   try:
-    user_input = message.text
+    user_input = message.text if message.text else ""
 
-    # Prompt កម្រិតខ្ពស់សម្រាប់ឆ្លើយតបគ្រប់សំណួរ និងវិភាគសុវត្ថិភាព Links/Files
-    system_prompt = (
-        "You are an elite, world-class AI Assistant (like ChatGPT and Gemini)"
-        " designed to answer anything accurately and chat about everything. "
-        "You have deep expertise in Cybersecurity, Ethical Hacking, Networking,"
-        " Programming, Device Security, and General Knowledge for all ages. "
-        "When the user sends a Link, URL, Code, or text, analyze it deeply for"
-        " security threats, phishing risks, bugs, or factual correctness. "
-        "If checking a link or file safety, explicitly state whether it is SAFE"
-        " or DANGEROUS with clear reasons. "
-        "Always reply in clear, professional, warm, and natural Khmer language,"
-        " blending precise technical terms when necessary."
-    )
-
-    response = co.chat(
-        model="command-a-plus-05-2026",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_input},
-        ],
-    )
-
-    reply_content = response.message.content
-    if isinstance(reply_content, list):
-      reply_text = "".join(
-          [
-              item.text
-              if hasattr(item, "text")
-              else getattr(item, "get", lambda x: "")("text", str(item))
-              for item in reply_content
-          ]
+    # #NOTE: កន្លែងសម្រាប់កែសម្រួលអត្ថបទពេលអ្នកចុចលើប៊ូតុងម៉ឺនុយនីមួយៗ
+    if user_input == "🛡️ Cybersecurity & IT Pro":
+      reply_text = (
+          "🛡️ **Cybersecurity & Ethical Hacking Hub:**\n"
+          "ទីនេះសម្រាប់ពិភាក្សា និងជំនួយការផ្នែក Pentesting, Network Security, "
+          "Vulnerability Assessment, និង Device Security (Phone, PC, Laptop, Hardware)។ "
+          "តើអ្នកចង់ឱ្យខ្ញុំជួយវិភាគអ្វីថ្ងៃនេះ?"
+      )
+    elif user_input == "🧠 ចំណេះដឹងទូទៅ (General Knowledge)":
+      reply_text = (
+          "🧠 **General Knowledge & Daily Assistant:**\n"
+          "ទីនេះសម្រាប់សួរសំណួរទូទៅ វិទ្យាសាស្ត្រ ប្រវត្តិសាស្ត្រ សុខភាព គន្លឹះជីវិត "
+          "និងការសិក្សាប្រចាំថ្ងៃ។ តើអ្នកចង់ស្វែងយល់ពីអ្វី?"
+      )
+    elif user_input == "🌐 Scan Link / File Security":
+      reply_text = (
+          "🌐 **Security Scanner (Links & Files):**\n"
+          "សូមផ្ញើ **URL Link**, **ឈ្មោះ File**, ឬ **Code snippet** មកកាន់ទីនេះ "
+          "នោះខ្ញុំនឹងធ្វើការវិភាគយ៉ាងក្បោះក្បាយ ថាតើវាមានសុវត្ថិភាព (Safe) ឬមានគ្រោះថ្នាក់។"
+      )
+    elif user_input == "💻 Programming & Code Debug":
+      reply_text = (
+          "💻 **Programming & Scripting Assistant:**\n"
+          "ផ្ញើកូដ ឬបញ្ហា Programming របស់អ្នកមក (Python, C++, JavaScript, Bash, v.v.) "
+          "ខ្ញុំនឹងជួយរកកំហុស (Debug) និងពន្យល់ពីរបៀបកែសម្រួលយ៉ាងលម្អិត។"
+      )
+    elif user_input == "📚 ការសិក្សា និងការអភិវឌ្ឍខ្លួន":
+      reply_text = (
+          "📚 **Study & Self-Development:**\n"
+          "ជួយសម្រួលដល់ការសិក្សា ការធ្វើលំហាត់ សរសេរបាយការណ៍ ឬបង្កើតគម្រោងផែនការផ្សេងៗ។"
+      )
+    elif user_input == "❓ ជំនួយការប្រើប្រាស់ (Help)":
+      reply_text = (
+          "📌 **របៀបប្រើប្រាស់ Bot នេះ៖**\n"
+          "1. **Chat Anything:** សួរនាំរាល់បញ្ហា IT, Hacking, ឬចំណេះដឹងទូទៅគ្រប់សំណួរ។\n"
+          "2. **Security Check:** ផ្ញើ Link ឬ Text មកដើម្បីឱ្យ AI វិភាគសុវត្ថិភាព។\n"
+          "3. **Image Analysis:** ផ្ញើរូបភាព ឬ Screenshot ឱ្យ AI ຊ່ວຍអាននិងពន្យល់។"
       )
     else:
-      reply_text = str(reply_content)
+      # #NOTE: ប្រព័ន្ធឆ្លើយតប AI ឆ្លាតវៃសម្រាប់រាល់សំណួរ និង Links (ChatGPT & Gemini style)
+      system_prompt = (
+          "You are an elite, world-class AI Assistant (like ChatGPT and Gemini)"
+          " designed to answer anything accurately and chat about everything. "
+          "You have deep expertise in Cybersecurity, Ethical Hacking, Networking,"
+          " Programming, Device Security, and General Knowledge for all ages. "
+          "When the user sends a Link, URL, Code, or text, analyze it deeply for"
+          " security threats, phishing risks, bugs, or factual correctness. "
+          "If checking a link or file safety, explicitly state whether it is SAFE"
+          " or DANGEROUS with clear reasons. "
+          "Always reply in clear, professional, warm, and natural Khmer language,"
+          " blending precise technical terms when necessary."
+      )
+
+      response = co.chat(
+          model="command-a-plus-05-2026",
+          messages=[
+              {"role": "system", "content": system_prompt},
+              {"role": "user", "content": user_input},
+          ],
+      )
+
+      reply_content = response.message.content
+      if isinstance(reply_content, list):
+        reply_text = "".join(
+            [
+                item.text
+                if hasattr(item, "text")
+                else getattr(item, "get", lambda x: "")("text", str(item))
+                for item in reply_content
+            ]
+        )
+      else:
+        reply_text = str(reply_content)
 
     bot.send_message(
         message.chat.id,
