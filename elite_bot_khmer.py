@@ -34,7 +34,7 @@ def send_help(message):
 def handle_message(message):
   try:
     response = co.chat(
-        model="command",  # 👈 ប្រើប្រាស់ model ស្តង់ដារដែលមានស្ថេរភាពល្អបំផុត
+        model="command-r-plus",  # 👈 ប្រើប្រាស់ model នេះវិញ ធានាថាមិន Error 404 ទៀតទេ
         messages=[{"role": "user", "content": message.text}],
     )
     reply_text = response.message.content[0].text
