@@ -2,22 +2,12 @@ import os
 import google.generativeai as genai
 import telebot
 from telebot import types
-from dotenv import load_dotenv
 
 # ==========================================
-# #CONFIG: ព័ត៌មានសម្ងាត់និងការតភ្ជាប់ API
+# #CONFIG: ព័ត៌មានសម្ងាត់និងការតភ្ជាប់ API (ដាក់បញ្ចូលស្រេច)
 # ==========================================
-load_dotenv()
-
-# ទាញយក Token ពី Railway Variables យ៉ាងถูกต้อง
-TELEGRAM_BOT_TOKEN = os.getenv("8812870706:AAE5xxwFgtakXa9DEgxNR_NKG40vgwoqYTg")
-GEMINI_API_KEY = os.getenv("tIavwumKg3mWGwOEEXWEmShojYT3svthAXltCH0q")
-
-if not TELEGRAM_BOT_TOKEN:
-  raise ValueError("❌ មិនទាន់បានកំណត់ TELEGRAM_BOT_TOKEN ទេ!")
-
-if not GEMINI_API_KEY:
-  raise ValueError("❌ មិនទាន់បានកំណត់ GEMINI_API_KEY ទេ!")
+TELEGRAM_BOT_TOKEN = "8812870706:AAE5xxwFgtakXa9DEgxNR_NKG40vgwoqYTg"
+GEMINI_API_KEY = "tIavwumKg3mWGwOEEXWEmShojYT3svthAXltCH0q"
 
 # កំណត់ค่า Gemini API
 genai.configure(api_key=GEMINI_API_KEY)
