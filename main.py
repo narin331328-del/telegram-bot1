@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 # #CONFIG: ព័ត៌មានសម្ងាត់និងការតភ្ជាប់ API
 # ==========================================
 load_dotenv()
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-COHERE_API_KEY = os.getenv("COHERE_API_KEY")
+TELEGRAM_BOT_TOKEN = os.getenv("8812870706:AAE5xxwFgtakXa9DEgxNR_NKG40vgwoqYTg")
+COHERE_API_KEY = os.getenv("tIavwumKg3mWGwOEEXWEmShojYT3svthAXltCH0q")
 
 # កំណត់ Timeout ២០វិនាទី ដើម្បីការពារ Error ពេលផ្ញើ Link ពិនិត្យ
 try:
