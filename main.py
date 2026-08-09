@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ទាញយក Token ពី Railway Variables យ៉ាងถูกต้อง
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+TELEGRAM_BOT_TOKEN = os.getenv("8812870706:AAE5xxwFgtakXa9DEgxNR_NKG40vgwoqYTg")
+GEMINI_API_KEY = os.getenv("tIavwumKg3mWGwOEEXWEmShojYT3svthAXltCH0q")
 
 if not TELEGRAM_BOT_TOKEN:
   raise ValueError("❌ មិនទាន់បានកំណត់ TELEGRAM_BOT_TOKEN ទេ!")
