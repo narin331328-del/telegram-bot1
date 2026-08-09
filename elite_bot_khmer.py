@@ -3,7 +3,7 @@ import cohere
 import telebot
 
 TELEGRAM_BOT_TOKEN = "8812870706:AAF_VEcy-lvnhUI6FqGeujllddRSaGqaKts"
-COHERE_API_KEY = "EVn3MniDjqKCQvVvE5fDjMxME2KK1oo3ecMdIxR"
+COHERE_API_KEY = "tIavwumKg3mWGwOEEXWEmShojYT3svthAXltCH0q"
 
 co = cohere.ClientV2(api_key=COHERE_API_KEY)
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
