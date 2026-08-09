@@ -14,58 +14,103 @@ except Exception as e:
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 
 
-# បង្កើត Menu ប៊ូតុងនៅខាងក្រោមប្រអប់សារ
+# កំណត់ម៉ឺនុយពាក្យបញ្ជា (Commands Menu) ឱ្យលោតចេញជាภาษาខ្មែរពេលវាយសញ្ញា /
+def set_bot_commands(bot_instance):
+  commands = [
+      telebot.types.BotCommand("start", "ចាប់ផ្តើមប្រើប្រាស់ Bot"),
+      telebot.types.BotCommand("help", "ជំនួយនិងរបៀបប្រើប្រាស់"),
+      telebot.types.BotCommand("daily", "សំណួរប្រចាំថ្ងៃសម្រាប់សួររាល់ថ្ងៃ"),
+      telebot.types.BotCommand("about", "ព័ត៌មានលម្អិតអំពី Bot នេះ"),
+  ]
+  bot_instance.set_my_commands(commands)
+
+
+# 1. បង្កើត Menu ប៊ូតុងនៅខាងក្រោមប្រអប់សារ
 def get_main_menu():
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-  btn1 = types.KeyboardButton("🏠 ចាប់ផ្តើម (Start)")
-  btn2 = types.KeyboardButton("❓ ជំនួយ (Help)")
-  btn3 = types.KeyboardButton("⚙️ មុខងារផ្សេងៗ (Menu)")
-  btn4 = types.KeyboardButton("✨ អំពីខ្ញុំ (About)")
+  btn1 = types.KeyboardButton("🏠 ចាប់ផ្តើម")
+  btn2 = types.KeyboardButton("❓ ជំនួយ")
+  btn3 = types.KeyboardButton("💡 សំណួរប្រចាំថ្ងៃ")
+  btn4 = types.KeyboardButton("✨ អំពីខ្ញុំ")
   markup.add(btn1, btn2, btn3, btn4)
   return markup
 
 
-# ទទួលពាក្យ "start" ឬ "/start" ដោយមិនបាច់ប្រើ /
+# ពាក្យបញ្ជា /start និងប៊ូតុង
 @bot.message_handler(
-    func=lambda message: message.text
-    and message.text.lower().strip() in ["start", "/start", "ចាប់ផ្តើម"]
+    commands=["start"],
+    func=lambda msg: msg.text
+    and msg.text.strip() in ["🏠 ចាប់ផ្តើម", "start", "ចាប់ផ្តើម"],
 )
 def send_welcome(message):
   bot.send_message(
       message.chat.id,
-      "សួស្តី! Bot ដំណើរការជោគជ័យហើយ! អ្នកអាចសួរសំណួរ ឬជជែកជាភាសាខ្មែរជាមួយខ្ញុំបាន"
-      " គ្រប់សំណួរទាំងអស់។",
+      "សួស្តី! 🤖 Bot របស់អ្នកត្រូវបានរៀបចំយ៉ាងពិសេសរួចរាល់ហើយ! អ្នកអាចសួរសំណួរ"
+      " ឬជជែកជាភាសាខ្មែរជាមួយខ្ញុំបានគ្រប់សំណួរទាំងអស់។",
       reply_markup=get_main_menu(),
   )
 
 
-# ទទួលពាក្យ "help" ឬ "/help"
+# ពាក្យបញ្ជា /help
 @bot.message_handler(
-    func=lambda message: message.text
-    and message.text.lower().strip() in ["help", "/help", "ជំនួយ"]
+    commands=["help"],
+    func=lambda msg: msg.text
+    and msg.text.strip() in ["❓ ជំនួយ", "help", "ជំនួយ"],
 )
 def send_help(message):
   bot.send_message(
       message.chat.id,
-      "ជំនួយ៖ អ្នកអាចផ្ញើសារ ឬសួរសំណួរណាមួយមកកាន់ Bot នេះបានភ្លាមៗ។",
+      "📌 **របៀបប្រើប្រាស់៖**\n- អ្នកអាចជជែកសួរនាំអ្វីក៏បានជាមួយ AI ផ្ទាល់។\n-"
+      " អាចចុចលើប៊ូតុងខាងក្រោមដើម្បីជ្រើសរើសមុខងារផ្សេងៗ។",
       reply_markup=get_main_menu(),
+      parse_mode="Markdown",
   )
 
 
-# មុខងារ Coming Soon សម្រាប់ប៊ូតុងផ្សេងៗ
+# ពាក្យបញ្ជា /about
 @bot.message_handler(
-    func=lambda message: message.text
-    and message.text.strip() in ["⚙️ មុខងារផ្សេងៗ (Menu)", "✨ អំពីខ្ញុំ (About)"]
+    commands=["about"],
+    func=lambda msg: msg.text and msg.text.strip() in ["✨ អំពីខ្ញុំ", "about"],
 )
-def coming_soon(message):
+def about_bot(message):
   bot.send_message(
       message.chat.id,
-      "⚠️ ទិន្នន័យនឹងមិនទាន់បានដាក់អោយប្រើការទេ it’s coming soon!",
+      "🤖 ខ្ញុំគឺជាជំនួយការ AI ដ៏ឆ្លាតវៃ បង្កើតឡើងដើម្បីជួយសម្រួលការងារ និងការសន្ទនារបស់អ្នកជាភាសាខ្មែរយ៉ាងរលូន!",
       reply_markup=get_main_menu(),
   )
 
 
-# ឆ្លើយតបគ្រប់សំណួរជជែកលេងទាំងអស់ជាភាសាខ្មែរ
+# ពាក្យបញ្ជា /daily (សំណួរប្រចាំថ្ងៃ)
+@bot.message_handler(
+    commands=["daily"],
+    func=lambda msg: msg.text and msg.text.strip() == "💡 សំណួរប្រចាំថ្ងៃ",
+)
+def daily_questions(message):
+  markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+  markup.add(
+      types.KeyboardButton("🌟 ផ្តល់យោបល់លើការលើកទឹកចិត្តថ្ងៃនេះ"),
+      types.KeyboardButton("💻 គន្លឹះរៀនសរសេរកូដកុំព្យូទ័រ"),
+      types.KeyboardButton("🥗 យោបល់ហាត់ប្រាណនិងសុខភាព"),
+      types.KeyboardButton("🔙 ត្រឡប់ក្រោយ"),
+  )
+  bot.send_message(
+      message.chat.id,
+      "💡 សូមជ្រើសរើសប្រធានបទសំណួរប្រចាំថ្ងៃដែលអ្នកចង់សួរ៖",
+      reply_markup=markup,
+  )
+
+
+# ប៊ូតុងត្រឡប់ក្រោយ
+@bot.message_handler(
+    func=lambda msg: msg.text and msg.text.strip() == "🔙 ត្រឡប់ក្រោយ"
+)
+def go_back(message):
+  bot.send_message(
+      message.chat.id, "🔙 បានត្រឡប់មកម៉ឺនុយដើមវិញ។", reply_markup=get_main_menu()
+  )
+
+
+# ឆ្លើយតបគ្រប់សំណួរជជែកលេងទូទៅ (Chat Anything) ជាភាសាខ្មែរ
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
   try:
@@ -75,8 +120,8 @@ def handle_message(message):
             {
                 "role": "system",
                 "content": (
-                    "You are a helpful assistant. Always reply in clear and"
-                    " natural Khmer language."
+                    "You are an advanced, friendly AI assistant. Always reply"
+                    " in clear, natural, and polite Khmer language."
                 ),
             },
             {"role": "user", "content": message.text},
@@ -110,4 +155,5 @@ def handle_message(message):
 
 
 if __name__ == "__main__":
+  set_bot_commands(bot)  # កំណត់ Menu Command ពេលចាប់ផ្តើមរត់ Bot
   bot.infinity_polling()
