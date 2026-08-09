@@ -3,7 +3,7 @@ import cohere
 import telebot
 
 TELEGRAM_BOT_TOKEN = "8812870706:AAF_VEcy-lvnhUI6FqGeujllddRSaGqaKts"
-COHERE_API_KEY = "tIavwumKg3mWGwOEEXWEmShojYT3svthAXltCH0q"
+COHERE_API_KEY = "EVn3MniDjqKCQvVvE5fDjMxME2KK1oo3ecMdIxR"
 
 co = cohere.ClientV2(api_key=COHERE_API_KEY)
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
@@ -18,7 +18,7 @@ def send_welcome(message):
 def handle_message(message):
   try:
     response = co.chat(
-        model="command-r",  # ប្រើ Model command-r ដែលត្រឹមត្រូវនិងដំណើរការ
+        model="command-a",  # 👈 ដូរមកប្រើ model នេះវិញទើបមិន Error 404
         messages=[{"role": "user", "content": message.text}],
     )
     reply_text = response.message.content[0].text
