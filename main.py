@@ -23,7 +23,7 @@ def send_long_message(chat_id, text, reply_markup=None):
     max_length = 4000
     if len(text) <= max_length:
         try:
-            bot.send_message(chat_id, text, reply_markup=reply_markup, parse_type=None)
+            bot.send_message(chat_id, text, reply_markup=reply_markup, parse_mode=None)
         except Exception:
             bot.send_message(chat_id, text, reply_markup=reply_markup)
     else:
@@ -31,7 +31,7 @@ def send_long_message(chat_id, text, reply_markup=None):
         for index, part in enumerate(parts):
             markup = reply_markup if index == len(parts) - 1 else None
             try:
-                bot.send_message(chat_id, part, reply_markup=markup, parse_type=None)
+                bot.send_message(chat_id, part, reply_markup=markup, parse_mode=None)
             except Exception:
                 bot.send_message(chat_id, part, reply_markup=markup)
 
@@ -59,10 +59,10 @@ def handle_text_messages(message):
         system_prompt = (
             "អ្នកគឺជាជំនួយការ AI ដ៏ជំនាញផ្នែក IT Networking និង Cybersecurity ។ "
             "ត្រូវប្រើប្រាស់ភាសាខ្មែរឱ្យបានត្រឹមត្រូវតាមស្ដង់ដារ អក្ខរាវិរុទ្ធច្បាស់លាស់ "
-            "និងងាយយល់បំផុត ដោយ blending precise technical terms when necessary. "
-            "Do NOT use broken markdown symbols that break telegram formatting."
+            "និងងាយយល់បំផុត ដោយប្រើប្រាស់ពាក្យបច្ចេកទេសឱ្យបានត្រឹមត្រូវ។"
         )
 
+        # ហៅ Cohere ClientV2 API
         response = co.chat(
             model="command-a-plus-05-2026",
             messages=[
@@ -72,25 +72,24 @@ def handle_text_messages(message):
         )
 
         reply_text = ""
-        # ទាញយកទិន្នន័យពី ClientV2 របស់ Cohere យ៉ាងមានសុវត្ថិភាព
+        # ទាញយកអត្ថបទឱ្យចំស្តង់ដារ ClientV2 របស់ Cohere
         if response and hasattr(response, "message") and response.message:
             if hasattr(response.message, "content") and response.message.content:
                 content = response.message.content
-                if isinstance(content, list):
-                    for item in content:
-                        if hasattr(item, "text"):
-                            reply_text += item.text
-                        elif isinstance(item, dict) and "text" in item:
-                            reply_text += item["text"]
+                if isinstance(content, list) and len(content) > 0:
+                    if hasattr(content[0], "text"):
+                        reply_text = content[0].text
+                    elif isinstance(content[0], dict) and "text" in content[0]:
+                        reply_text = content[0]["text"]
                 elif isinstance(content, str):
                     reply_text = content
 
         if not reply_text:
-            reply_text = str(response) # fallback បើទម្រង់ទិន្នន័យខុសបន្តិចបន្តួច
+            reply_text = "⚠️ សូមអភ័យទោស ប្រព័ន្ធទទួលបានទម្រង់ឆ្លើយតបមិនច្បាស់លាស់។"
 
         send_long_message(
             message.chat.id,
-            reply_text if reply_text else "⚠️ សូមអភ័យទោស ប្រព័ន្ធមិនទាន់ទទួលបានទិន្នន័យឆ្លើយតប។",
+            reply_text,
             reply_markup=get_main_menu(),
         )
     except Exception as e:
@@ -101,9 +100,8 @@ def handle_text_messages(message):
         )
 
 # ##########################################
-# # RUN BOT (កែសម្រួលចំណុចខុស `__name__` ត្រង់នេះ)
+# # RUN BOT (កែសម្រួលត្រង់ចំណុច __name__ ឱ្យបានត្រឹមត្រូវ)
 # ##########################################
 if __name__ == "__main__":
-    set_bot_commands = lambda b: None # Function placeholder ការពារ Error ពេលអត់មាន
-    print("Bot is running stably without Markdown parse errors...")
+    print("Bot is running stably with Cohere ClientV2...")
     bot.infinity_polling(skip_pending=True)
